@@ -1,21 +1,33 @@
-#  Кусочек JIT компилятора
+#  Intro
 
-Цель - получить знакомство с системными вызывами, используемыми для получения/освобождения
-памяти от ядра. Получить представление о том, как может работать JIT компилятор.
+Inspired by http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1609r0.html. 
+Complex attempt to implement simplified process of jit compilation for void-template function without use of `libdl`. Unfortunatelly, it doesn't work.
 
-## Программа должна
- * Выделить память с помощью mmap(2).
- * Записать в выделенную память машинный код, соответсвующий какой-либо функции.
- * Изменить права на выделенную память - чтение и исполнение. See: mprotect(2).
- * Вызвать функцию по указателю на выделенную память.
- * Освободить выделенную память.
+## Details
+```JIT_DECLARATION``` create string literal with kept code
+```JIT_CALL``` lazily compile template specialization to shared library and load it.
+## Requirements
+* Gcc or Clang (C++17 or higher)
+* Cmake 3.12 or higher
 
-## Что может помочь?
- * man objdump
- * help disassemble в gdb
-
-## Extra points
-Сильные духом призываются к возможности модификации кода выполняемой функции
-в runtime. Например, вы можете получить аргументом вызова вашей программы
-какое-то число и пропатчить машинный код этим числом. Эта часть задания будет
-оцениваться в дополнительные баллы.
+## Usage
+ * To declare function that could be possibly jit'ed write
+ ```
+ JIT_DECLARATION
+ (
+ 		fun,
+ 		template<template params>
+ 		void fun(args...) {
+ 
+ 		}
+ )
+ ```
+ * To run
+ ```
+ JIT_CALL(fun, fun<template params>, args...);
+ ```
+ 
+## Todo
+ * maintain non-zero count of function args.
+ * returning value of jit function
+ * find mangled name in shared library and call it directly.
