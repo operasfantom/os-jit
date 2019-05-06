@@ -28,9 +28,9 @@ namespace rd_jit {
 
 		out.close();
 
-		std::string library_path = tmp_folder + name + ".so";
+		std::string library_path = tmp_folder + name + ".a";
 		std::string command =
-				"cc " + source_path + " -o " + library_path + " -nostdlib -shared -fPIC -fno-plt -fno-pic";
+				"cc "s + " -c " + source_path + " -o " + library_path + " -static -fno-plt -fno-pic";
 		int code = system(command.c_str());
 		if (WIFEXITED(code) == 0) {
 			perror(("compilation of " + name + " failed").c_str());
